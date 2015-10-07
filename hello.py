@@ -12,17 +12,17 @@ from wtforms import StringField, SubmitField
 from wtforms.validators import Required
 from flask.ext.sqlalchemy import SQLAlchemy
 
-basedir = os.path.abspath(os.path.dirname(__file__))
+basedir, filename = os.path.split(os.path.realpath(__file__))
 
 app=Flask(__name__)
-manager=Manager(app)
-bootstrap=Bootstrap(app)
-moment=Moment(app)
 app.config['SECRET_KEY'] = 'hard to guess string'
 app.config['SQLALCHEMY_DATABASE_URI']=\
             'sqlite:///' + os.path.join(basedir, 'data.sqlite')
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 
+manager=Manager(app)
+bootstrap=Bootstrap(app)
+moment=Moment(app)
 db = SQLAlchemy(app)
 
 class NameForm(Form):
@@ -41,8 +41,8 @@ class Role(db.Model):
 class User(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), unique=True, index=True)
-    role_id = db.Column(db.Integer, db.ForeignKey('role.id'))
+    username = db.Column(db.String(64), unique=True, index=True)
+    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
 
     def __repr__(self):
         return '<User %r>' % self.username	
