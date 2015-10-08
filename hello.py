@@ -4,7 +4,7 @@
 import os
 from datetime import datetime
 from flask import Flask, render_template, session, redirect, url_for, flash
-from flask.ext.script import Manager
+from flask.ext.script import Manager, Shell
 from flask.ext.bootstrap import Bootstrap
 from flask.ext.moment import Moment
 from flask.ext.wtf import Form
@@ -47,6 +47,9 @@ class User(db.Model):
     def __repr__(self):
         return '<User %r>' % self.username	
 
+def make_shell_context():
+    return dict(app=app, db=db, Role=Role, User=User)
+manager.add_command("shell", Shell(make_context=make_shell_context))
         
 @app.route('/', methods=['GET','POST'])
 def index():
