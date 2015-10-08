@@ -52,13 +52,23 @@ class User(db.Model):
 def index():
     form = NameForm()
     if form.validate_on_submit():
+
+        # user = User.query.filter_by(username=form.name.data).first()
+        # if user is None:
+            # user = User(username = form.name.data)
+            # db.session.add(user)
+            # session['known'] = False
+        # else:
+            # session['known'] = True
+
         old_name=session.get('name')
         if old_name is not None and old_name != form.name.data:
             flash('Looks like you have changed your name!')
         session['name'] = form.name.data
+        # form.name.data = ''
         return redirect(url_for('index'))
     return render_template('index.html', form=form, name=session.get('name'),
-	                        current_time=datetime.utcnow())
+                            current_time=datetime.utcnow())
 	
 @app.route('/user/<name>')
 def user(name):
