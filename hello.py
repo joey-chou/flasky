@@ -4,13 +4,15 @@
 import os
 from datetime import datetime
 from flask import Flask, render_template, session, redirect, url_for, flash
-from flask.ext.script import Manager, Shell
-from flask.ext.bootstrap import Bootstrap
-from flask.ext.moment import Moment
-from flask.ext.wtf import Form
+from flask_script import Manager, Shell
+from flask_bootstrap import Bootstrap
+from flask_moment import Moment
+from flask_wtf import Form
 from wtforms import StringField, SubmitField
 from wtforms.validators import Required
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate, MigrateCommand
+from flask_mail import Mail
 
 basedir, filename = os.path.split(os.path.realpath(__file__))
 
@@ -20,10 +22,20 @@ app.config['SQLALCHEMY_DATABASE_URI']=\
     'sqlite:///' + os.path.join(basedir, 'data.sqlite')
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 
+app.config['MAIL_SERVER'] = 'smtp.163.com'
+app.config['MAIL_PORT'] = 25
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+
 manager=Manager(app)
 bootstrap=Bootstrap(app)
 moment=Moment(app)
 db = SQLAlchemy(app)
+mail = Mail(app)
+
+migrate = Migrate(app,db)
+manager.add_command('db',MigrateCommand)
 
 class NameForm(Form):
     name = StringField('What is your name?',validators=[Required()])
